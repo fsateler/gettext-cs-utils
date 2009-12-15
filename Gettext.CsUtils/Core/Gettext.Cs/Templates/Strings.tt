@@ -25,13 +25,13 @@ namespace <#= this.NamespaceName #>
         public const string ResourceName = "<#= this.ResourceName #>";
 
         private static string resourcesDir = GetSetting("ResourcesDir", "<#= this.DefaultResourceDir #>");
-        private static string fileFormat = GetSetting("ResourcesFileFormat", "<#= this.DefaultResourceDir #>");
+        private static string fileFormat = GetSetting("ResourcesFileFormat", "<#= this.DefaultFileFormat #>");
         
         private static string GetSetting(string setting, string defaultValue)
         {
 			var section = (System.Collections.Specialized.NameValueCollection)System.Configuration.ConfigurationManager.GetSection("<#= this.ConfigurationSection #>");
 			if (section == null) return defaultValue;
-			else return section[setting];
+			else return section[setting] ?? defaultValue;
         }
         
         /// <summary>
@@ -141,9 +141,9 @@ namespace <#= this.NamespaceName #>
     string ClassName = "Strings";
     string ResourceName = "Strings";
     string NamespaceName = "Gettext";
-    string ResourceManagerType = "Gettext.Cs.GettextResourceManager";
+    string ResourceManagerType = "global::Gettext.Cs.GettextResourceManager";
     string DefaultResourceDir = "Po";
-    string DefaultFileFormat = "{{culture}}\\{{resources}}.po";
+    string DefaultFileFormat = "{{culture}}/{{resource}}.po";
     string ConfigurationSection = "appSettings";
     bool ServerMapPath = false;
 #>

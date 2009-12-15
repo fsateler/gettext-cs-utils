@@ -24,13 +24,13 @@ namespace Gettext
         public const string ResourceName = "Strings";
 
         private static string resourcesDir = GetSetting("ResourcesDir", "Po");
-        private static string fileFormat = GetSetting("ResourcesFileFormat", "Po");
+        private static string fileFormat = GetSetting("ResourcesFileFormat", "{{culture}}/{{resource}}.po");
         
         private static string GetSetting(string setting, string defaultValue)
         {
 			var section = (System.Collections.Specialized.NameValueCollection)System.Configuration.ConfigurationManager.GetSection("appSettings");
 			if (section == null) return defaultValue;
-			else return section[setting];
+			else return section[setting] ?? defaultValue;
         }
         
         /// <summary>
@@ -61,7 +61,7 @@ namespace Gettext
                 if (object.ReferenceEquals(resourceMan, null))
                 {
 					var dir = resourcesDir;
-					var mgr = new Gettext.Cs.GettextResourceManager(ResourceName, dir, fileFormat);
+					var mgr = new global::Gettext.Cs.GettextResourceManager(ResourceName, dir, fileFormat);
                     resourceMan = mgr;
                 }
                 

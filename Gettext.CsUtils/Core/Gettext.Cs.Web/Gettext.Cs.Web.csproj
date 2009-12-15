@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D8869765-AB47-4C03-B2C5-E5498A55CA79}</ProjectGuid>
+    <ProjectGuid>{38474466-DA21-4D19-A4D8-E2E7918480D6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gettext.Cs</RootNamespace>
-    <AssemblyName>Gettext.Cs</AssemblyName>
+    <RootNamespace>Gettext.Cs.Web</RootNamespace>
+    <AssemblyName>Gettext.Cs.Web</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,10 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -46,28 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Resource\FileBasedResourceManager.cs" />
-    <Compile Include="Parser\ParserRequestor.cs" />
-    <Compile Include="Parser\PoParser.cs" />
+    <Compile Include="Controls\AspTranslate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resource\GettextResourceManager.cs" />
-    <Compile Include="Resource\GettextResourceReader.cs" />
-    <Compile Include="Resource\GettextResourceSet.cs" />
-    <Compile Include="Templates\Strings.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Strings.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Templates\Strings.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Strings.cs</LastGenOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
