@@ -215,7 +215,7 @@ namespace Gettext.Cs
                 // Else try the executing assembly dir
                 if (Assembly.GetExecutingAssembly() != null)
                 {
-                    if (System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) != System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                    if (Assembly.GetEntryAssembly() == null || System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) != System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                     {
                         string dir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), path);
                         fullpath = System.IO.Path.Combine(dir, resourceFileName);
