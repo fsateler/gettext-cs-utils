@@ -51,6 +51,8 @@ namespace Gettext
             set { fileFormat = value; }
         }
 
+		private static DateTime resourceManagerLoadedAt = DateTime.Now;
+
         /// <summary>
         /// Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -58,12 +60,14 @@ namespace Gettext
         {
             get
             {
+				            
                 if (object.ReferenceEquals(resourceMan, null))
                 {
 					var dir = resourcesDir;
 					var mgr = new global::Gettext.Cs.GettextResourceManager(ResourceName, dir, fileFormat);
                     resourceMan = mgr;
-                }
+                    
+                                    }
                 
                 return resourceMan;
             }

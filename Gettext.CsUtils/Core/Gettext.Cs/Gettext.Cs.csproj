@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D8869765-AB47-4C03-B2C5-E5498A55CA79}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Resource\DatabaseResourceManager.cs" />
+    <Compile Include="Resource\DatabaseResourceReader.cs" />
+    <Compile Include="Resource\DatabaseResourceSet.cs" />
     <Compile Include="Resource\FileBasedResourceManager.cs" />
     <Compile Include="Parser\ParserRequestor.cs" />
     <Compile Include="Parser\PoParser.cs" />
