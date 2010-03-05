@@ -62,7 +62,7 @@ namespace Instedd.Gettext.AspExtract
 
         public AspStringsParser(string tag)
         {
-            regex = new Regex(String.Format(@"<\s*{0}\s*[^>]*>(?<text>.+?)</\s*{0}\s*>", tag));
+            regex = new Regex(String.Format(@"<\s*{0}\s*[^>]*>(?<text>.+?)</\s*{0}\s*>", tag), RegexOptions.Singleline);
         }
 
         public void Parse(String text, IAspStringsParserRequestor requestor)

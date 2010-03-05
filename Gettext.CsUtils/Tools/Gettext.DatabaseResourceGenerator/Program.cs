@@ -96,7 +96,7 @@ namespace Gettext.DatabaseResourceGenerator
 
                     foreach (var resourceToUpdate in resourcesToUpdate)
                     {
-                        command.CommandText = string.Format("UPDATE {0} SET MessageValue = '{1}' WHERE CULTURE = '{2}' AND MessageKey = '{3}'",
+                        command.CommandText = string.Format("UPDATE {0} SET MessageValue = '{1}' WHERE CULTURE = '{2}' AND MessageKey = '{3}' AND MessageValue IS NULL",
                                                                 tableName, resourceToUpdate.Value.Replace("'", "''"), culture, resourceToUpdate.Key.Replace("'", "''"));
 
                         command.ExecuteNonQuery();

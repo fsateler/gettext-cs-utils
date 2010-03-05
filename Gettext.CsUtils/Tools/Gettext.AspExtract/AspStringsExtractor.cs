@@ -65,15 +65,17 @@ namespace Instedd.Gettext.AspExtract
 
         public void Extract(string path)
         {
-            foreach (var file in Directory.GetFiles(path, "*.aspx", SearchOption.AllDirectories))
+            ExtractFilesWithPattern(path, "*.aspx");
+            ExtractFilesWithPattern(path, "*.ascx");
+            ExtractFilesWithPattern(path, "*.Master");
+        }
+
+        private void ExtractFilesWithPattern(string path, string pattern)
+        {
+            foreach (var file in Directory.GetFiles(path, pattern, SearchOption.AllDirectories))
             {
                 ExtractFromFile(file);
             }
-
-            foreach (var file in Directory.GetFiles(path, "*.ascx", SearchOption.AllDirectories))
-            {
-                ExtractFromFile(file);
-            }   
         }
 
         private void ExtractFromFile(string file)
