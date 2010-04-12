@@ -13,10 +13,17 @@ namespace Gettext.Cs
     {
         private string dsn;
         private string language;
+        private string sp;
 
-        public DatabaseResourceReader
-           (string dsn, CultureInfo culture)
+        public DatabaseResourceReader(string dsn, CultureInfo culture)
         {
+            this.dsn = dsn;
+            this.language = culture.Name;
+        }
+
+        public DatabaseResourceReader(string dsn, CultureInfo culture, string sp)
+        {
+            this.sp = sp;
             this.dsn = dsn;
             this.language = culture.Name;
         }
@@ -31,20 +38,33 @@ namespace Gettext.Cs
             if (language == "")
                 language = CultureInfo.InvariantCulture.Name;
 
-            command.CommandText = string.Format("SELECT MessageKey, MessageValue FROM Message WHERE Culture = '{0}'", language);
+            // Use stored procedure or plain text
+            if (sp == null)
+            {
+                command.CommandText = string.Format("SELECT MessageKey, MessageValue FROM Message WHERE Culture = '{0}'", language);
+            }
+            else
+            {
+                command.CommandText = sp;
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@culture", language);
+            }
 
             try
             {
                 connection.Open();
 
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    if (reader.GetValue(1) != System.DBNull.Value)
-                        dict.Add(reader.GetString(0), reader.GetString(1));
+                    while (reader.Read())
+                    {
+                        if (reader.GetValue(1) != System.DBNull.Value)
+                        {
+                            dict.Add(reader.GetString(0), reader.GetString(1));
+                        }
+                    }
                 }
 
-                reader.Close();
             }
             catch   // ignore missing columns in the database
             {
@@ -53,6 +73,7 @@ namespace Gettext.Cs
             {
                 connection.Close();
             }
+
             return dict.GetEnumerator();
         }
 

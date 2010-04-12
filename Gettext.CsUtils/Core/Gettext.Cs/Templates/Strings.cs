@@ -18,6 +18,7 @@ namespace Gettext
 {
     public class Strings
     {
+		private static Object resourceManLock = new Object();
         private static System.Resources.ResourceManager resourceMan;
         private static System.Globalization.CultureInfo resourceCulture;
 
@@ -60,14 +61,14 @@ namespace Gettext
         {
             get
             {
-				            
+            
                 if (object.ReferenceEquals(resourceMan, null))
                 {
 					var dir = resourcesDir;
 					var mgr = new global::Gettext.Cs.GettextResourceManager(ResourceName, dir, fileFormat);
                     resourceMan = mgr;
                     
-                                    }
+                }
                 
                 return resourceMan;
             }

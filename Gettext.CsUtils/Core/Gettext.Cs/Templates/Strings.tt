@@ -19,6 +19,7 @@ namespace <#= this.NamespaceName #>
 {
     public class <#= this.ClassName #>
     {
+		private static Object resourceManLock = new Object();
         private static System.Resources.ResourceManager resourceMan;
         private static System.Globalization.CultureInfo resourceCulture;
 
@@ -61,14 +62,19 @@ namespace <#= this.NamespaceName #>
         {
             get
             {
-				<# if (ResourceManagerExpires) { #>
-				if (resourceMan != null && 
-					DateTime.Now.Subtract(resourceManagerLoadedAt).TotalMinutes >= <#= ResourceManagerTTL #>)
+<# if (ResourceManagerExpires) { #>
+				if (resourceMan != null && DateTime.Now.Subtract(resourceManagerLoadedAt).TotalMinutes >= <#= ResourceManagerTTL #>)
 				{
-					resourceMan.ReleaseAllResources();
-                    resourceMan = null;
+					lock (resourceManLock) 
+					{
+						if (resourceMan != null && DateTime.Now.Subtract(resourceManagerLoadedAt).TotalMinutes >= <#= ResourceManagerTTL #>)
+						{
+							resourceMan.ReleaseAllResources();
+							resourceMan = null;
+						}
+					}
 				}
-				<# } #>
+<# } #>
             
                 if (object.ReferenceEquals(resourceMan, null))
                 {
@@ -76,12 +82,12 @@ namespace <#= this.NamespaceName #>
 <# if (ServerMapPath) { #>
 					dir = System.Web.HttpContext.Current.Server.MapPath(dir);
 <# } #>
-					var mgr = new <#= this.ResourceManagerType #>(ResourceName, dir, fileFormat);
+					var mgr = <#= String.Format(this.ResourceManagerCtor, this.ResourceManagerType) #>;
                     resourceMan = mgr;
                     
-                    <# if (ResourceManagerExpires) { #>
+<# if (ResourceManagerExpires) { #>
                     resourceManagerLoadedAt = DateTime.Now;
-                    <# } #>
+<# } #>
                 }
                 
                 return resourceMan;
@@ -157,6 +163,7 @@ namespace <#= this.NamespaceName #>
     string ResourceName = "Strings";
     string NamespaceName = "Gettext";
     string ResourceManagerType = "global::Gettext.Cs.GettextResourceManager";
+    string ResourceManagerCtor = "new {0}(ResourceName, dir, fileFormat)";
     string DefaultResourceDir = "Po";
     string DefaultFileFormat = "{{culture}}/{{resource}}.po";
     string ConfigurationSection = "appSettings";

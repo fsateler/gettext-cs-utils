@@ -12,18 +12,27 @@ namespace Gettext.Cs
     public class DatabaseResourceManager : System.Resources.ResourceManager
     {
         private string dsn;
+        private string sp;
 
-        //HACK: the utilities require the constructor of a custom ResourceManager to have this signature,
-        //even though the parameters are not used in this case.
-        public DatabaseResourceManager(string name, string path, string fileformat)
+        public DatabaseResourceManager()
             : base()
         {
-            this.dsn = ConfigurationManager.AppSettings["Gettext.ConnectionString"];
+            this.dsn = ConfigurationManager.AppSettings["Gettext.ConnectionString"] ?? ConfigurationManager.ConnectionStrings["Gettext"].ConnectionString;
             ResourceSets = new System.Collections.Hashtable();
         }
 
-        protected override ResourceSet InternalGetResourceSet(
-          CultureInfo culture, bool createIfNotExists, bool tryParents)
+        public DatabaseResourceManager(string storedProcedure)
+            : this()
+        {
+            this.sp = storedProcedure;
+        }
+
+        public DatabaseResourceManager(string name, string path, string fileformat)
+            : this()
+        {
+        }
+
+        protected override ResourceSet InternalGetResourceSet(CultureInfo culture, bool createIfNotExists, bool tryParents)
         {
             DatabaseResourceSet rs = null;
  
@@ -33,7 +42,7 @@ namespace Gettext.Cs
             }
             else
             {
-                rs = new DatabaseResourceSet(dsn, culture);
+                rs = new DatabaseResourceSet(dsn, culture, sp);
                 ResourceSets.Add(culture.Name, rs);
             }
             
