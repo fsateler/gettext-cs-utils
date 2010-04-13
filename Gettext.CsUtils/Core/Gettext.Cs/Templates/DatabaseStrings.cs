@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace Gettext
 {
-    public class Strings
+    public class DatabaseStrings
     {
 		private static Object resourceManLock = new Object();
         private static System.Resources.ResourceManager resourceMan;
@@ -24,32 +24,11 @@ namespace Gettext
 
         public const string ResourceName = "Strings";
 
-        private static string resourcesDir = GetSetting("ResourcesDir", "Po");
-        private static string fileFormat = GetSetting("ResourcesFileFormat", "{{culture}}/{{resource}}.po");
-        
         private static string GetSetting(string setting, string defaultValue)
         {
 			var section = (System.Collections.Specialized.NameValueCollection)System.Configuration.ConfigurationManager.GetSection("appSettings");
 			if (section == null) return defaultValue;
 			else return section[setting] ?? defaultValue;
-        }
-        
-        /// <summary>
-        /// Resources directory used to retrieve files from.
-        /// </summary>
-        public static string ResourcesDirectory
-        {
-            get { return resourcesDir; }
-            set { resourcesDir = value; }
-        }
-
-        /// <summary>
-        /// Format of the file based on culture and resource name.
-        /// </summary>
-        public static string FileFormat
-        {
-            get { return fileFormat; }
-            set { fileFormat = value; }
         }
 
 		private static DateTime resourceManagerLoadedAt = DateTime.Now;
@@ -68,8 +47,7 @@ namespace Gettext
 					{
 					    if (object.ReferenceEquals(resourceMan, null))
 		                {
-							var dir = resourcesDir;
-							var mgr = new global::Gettext.Cs.GettextResourceManager(ResourceName, dir, fileFormat);
+							var mgr = new global::Gettext.Cs.DatabaseResourceManager("GetResourceSet");
 							resourceMan = mgr;
 						}
 					}

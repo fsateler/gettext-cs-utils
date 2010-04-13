@@ -27,6 +27,7 @@ namespace Gettext.Cs
             this.sp = storedProcedure;
         }
 
+        // Hack: kept for compatibility
         public DatabaseResourceManager(string name, string path, string fileformat)
             : this()
         {
