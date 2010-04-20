@@ -12,13 +12,15 @@ namespace Instedd.Gettext.AspExtract
     {
         static void Main(string[] args)
         {
-            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "t:k:e:p:f:") { Opterr = false };
+            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "t:k:e:p:f:c:d:") { Opterr = false };
 
             string tag = null;
             string keyword = null;
             string extension = null;
             string path = null;
             string function = null;
+            string charset = null;
+            string fromCharset = null;
 
             int option;
             while (-1 != (option = getopt.getopt()))
@@ -30,6 +32,8 @@ namespace Instedd.Gettext.AspExtract
                     case 'e': extension = getopt.Optarg; break;
                     case 'p': path = getopt.Optarg; break;
                     case 'f': function = getopt.Optarg; break;
+                    case 'c': charset = getopt.Optarg; break;
+                    case 'd': fromCharset = getopt.Optarg; break;
 
                     default: PrintUsage(); return;
                 }
@@ -60,7 +64,7 @@ namespace Instedd.Gettext.AspExtract
                     parser = tagParser ?? csParser;
                 }
 
-                var extractor = new AspStringsExtractor(keyword, extension, parser);
+                var extractor = new AspStringsExtractor(keyword, extension, charset, fromCharset, parser);
                 extractor.Extract(path);
             }
             catch (Exception ex)
@@ -79,12 +83,13 @@ namespace Instedd.Gettext.AspExtract
             Console.WriteLine("Extracts all text contained in a specified tag from asp net files.");
             Console.WriteLine("For each file processed, another file is created with a function processable by xgettext.");
             Console.WriteLine();
-            Console.WriteLine("Usage: {0} -tTAG -fFUNCTION -kKEYWORD -eEXTENSION -pPATH", Assembly.GetExecutingAssembly().GetName().Name);
+            Console.WriteLine("Usage: {0} -tTAG -fFUNCTION -kKEYWORD -eEXTENSION -pPATH -cCHARSET", Assembly.GetExecutingAssembly().GetName().Name);
             Console.WriteLine(" Tag: extract text contained in this tag from all aspx and aspc files.");
             Console.WriteLine(" Function: extract text contained in the first parameter of this C# function from all aspx and aspc files.");
             Console.WriteLine(" Keyword: function name to use in the generation of the new file.");
             Console.WriteLine(" Extension: extension to append to asp files to create the new ones.");
             Console.WriteLine(" Path: path to process for asp files.");
+            Console.WriteLine(" Charset: output charset for postring files.");
         }
     }
 }

@@ -9,31 +9,38 @@ namespace Instedd.Gettext.AspExtract
     public class AspStringsExtractor
     {
         IAspStringsParser parser;
-        String outputExtension;
-        String keyword;
+        
+        string outputExtension;
+        string keyword;
+        string charset;
+        string fromCharset;
 
         public bool Notify { get; set; }
 
-        public AspStringsExtractor(string keyword, string outputExtension, IAspStringsParser parser)
+        public AspStringsExtractor(string keyword, string outputExtension, string charset, string fromCharset, IAspStringsParser parser)
         {
             this.keyword = keyword;
             this.parser = parser;
             this.outputExtension = outputExtension;
+            this.charset = charset;
+            this.fromCharset = fromCharset;
         }
 
         private class ParserRequestor : IAspStringsParserRequestor, IDisposable
         {
             string path;
             string keyword;
+            string outputCharset;
 
             TextWriter writer;
 
-            public ParserRequestor(string outputPath, string keyword)
+            public ParserRequestor(string outputPath, string keyword, string outputCharset)
             {
                 this.keyword = keyword;
                 this.path = outputPath;
+                this.outputCharset = outputCharset;
 
-                this.writer = new StreamWriter(path, false);
+                this.writer = new StreamWriter(path, false, outputCharset == null ? Encoding.Default : Encoding.GetEncoding(outputCharset));
             }
 
             #region IAspStringsParserRequestor Members
@@ -82,9 +89,9 @@ namespace Instedd.Gettext.AspExtract
         {
             var output = String.Format("{0}.{1}", file, outputExtension);
             
-            using (var requestor = new ParserRequestor(output, keyword))
+            using (var requestor = new ParserRequestor(output, keyword, charset))
             {
-                using (var reader = new StreamReader(file))
+                using (var reader = new StreamReader(file, Encoding.GetEncoding(fromCharset)))
                 {
                     parser.Parse(reader.ReadToEnd(), requestor);
                 }
