@@ -16,12 +16,13 @@ namespace Gettext.DatabaseResourceGenerator
         
         static void Main(string[] args)
         {
-            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "i:c:n") { Opterr = false };
+            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "s:i:c:na") { Opterr = false };
 
             string input = null;
             string culture = null;
 
             bool dontDeleteSet = false;
+            bool insertAll = false;
 
             string connString = ConfigurationManager.ConnectionStrings["Gettext"].ConnectionString;
             string insertSP = ConfigurationManager.AppSettings["SP.Insert"];
@@ -35,6 +36,8 @@ namespace Gettext.DatabaseResourceGenerator
                     case 'i': input = getopt.Optarg; break;
                     case 'c': culture = getopt.Optarg; break;
                     case 'n': dontDeleteSet = true; break;
+                    case 's': connString = getopt.Optarg; break;
+                    case 'a': insertAll = true; break;
                     default: PrintUsage(); return;
                 }
             }
@@ -59,9 +62,11 @@ namespace Gettext.DatabaseResourceGenerator
                     db.CheckSPs();
 
                     if (!dontDeleteSet)
+                    {
                         db.DeleteResourceSet(culture);
+                    }
 
-                    var requestor = new DatabaseParserRequestor(culture, db);
+                    var requestor = new DatabaseParserRequestor(culture, db, insertAll);
                     new PoParser().Parse(new StreamReader(input), requestor);
 
                     db.Commit();
@@ -109,9 +114,15 @@ namespace Gettext.DatabaseResourceGenerator
             Console.WriteLine();
             Console.WriteLine("Parses a .po file and adds its entries to a database's table.");
             Console.WriteLine("Then you can use a DatabaseResourceManager to use those resources at runtime.");
-            Console.WriteLine("Usage: {0} -iINPUTFILE -cCULTURE", Assembly.GetExecutingAssembly().GetName().Name);
+            Console.WriteLine("Usage: {0} -iINPUTFILE -cCULTURE -sCONNSTRING", Assembly.GetExecutingAssembly().GetName().Name);
             Console.WriteLine(" INPUTFILE Input file must be in po format.");
             Console.WriteLine(" CULTURE Culture for the resource set to handle.");
+            Console.WriteLine(" CONNSTRING Connection string to override app config.");
+            Console.WriteLine(" CULTURE Culture for the resource set to handle.");
+            Console.WriteLine("Options:");
+            Console.WriteLine(" -n Dont delete previous resource set.");
+            Console.WriteLine(" -a Insert all values, regardless of being empty.");
+
         }
     }
 }

@@ -60,7 +60,7 @@ namespace Gettext.Cs
                     {
                         if (reader.GetValue(1) != System.DBNull.Value)
                         {
-                            dict.Add(reader.GetString(0), reader.GetString(1));
+                            dict[reader.GetString(0)] = reader.GetString(1);
                         }
                     }
                 }
