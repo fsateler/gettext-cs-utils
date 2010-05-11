@@ -6,6 +6,7 @@ using System.Resources;
 using System.Collections;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Configuration;
 
 namespace Gettext.Cs
 {
@@ -66,8 +67,13 @@ namespace Gettext.Cs
                 }
 
             }
-            catch   // ignore missing columns in the database
+            catch
             {
+                bool raise = false;
+                if (bool.TryParse(ConfigurationManager.AppSettings["Gettext.Throw"], out raise) && raise)
+                {
+                    throw;
+                }
             }
             finally
             {

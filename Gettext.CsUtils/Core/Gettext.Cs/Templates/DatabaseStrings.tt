@@ -145,5 +145,5 @@ namespace <#= this.NamespaceName #>
     string ConfigurationSection = "appSettings";
     string StoredProcedureName = "GetResourceSet";
     bool ResourceManagerExpires = false;
-    int ResourceManagerTTL = 0;
+    string ResourceManagerTTL = "0";
 #>
