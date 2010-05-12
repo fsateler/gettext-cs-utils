@@ -43,8 +43,19 @@ namespace Gettext.Cs
             }
             else
             {
-                rs = new DatabaseResourceSet(dsn, culture, sp);
-                ResourceSets.Add(culture.Name, rs);
+                lock (ResourceSets)
+                {
+                    // Check hash table once again after lock is set
+                    if (ResourceSets.Contains(culture.Name))
+                    {
+                        rs = ResourceSets[culture.Name] as DatabaseResourceSet;
+                    }
+                    else
+                    {
+                        rs = new DatabaseResourceSet(dsn, culture, sp);
+                        ResourceSets.Add(culture.Name, rs);
+                    }
+                }
             }
             
             return rs; 
