@@ -15,6 +15,8 @@ namespace Gettext.DatabaseResourceGenerator
         SqlConnection conn;
         SqlTransaction trans;
 
+        public bool CheckDatabaseExists { get; set; }
+
         public DatabaseInterface(string connString, string insertSP, string deleteSP)
         {
             this.connString = connString;

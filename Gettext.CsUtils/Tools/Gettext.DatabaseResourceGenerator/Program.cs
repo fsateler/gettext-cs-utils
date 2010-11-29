@@ -16,13 +16,14 @@ namespace Gettext.DatabaseResourceGenerator
         
         static void Main(string[] args)
         {
-            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "s:i:c:na") { Opterr = false };
+            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "s:i:c:nad") { Opterr = false };
 
             string input = null;
             string culture = null;
 
             bool dontDeleteSet = false;
             bool insertAll = false;
+            bool skipValidation = false;
 
             string connString = ConfigurationManager.ConnectionStrings["Gettext"].ConnectionString;
             string insertSP = ConfigurationManager.AppSettings["SP.Insert"];
@@ -38,6 +39,7 @@ namespace Gettext.DatabaseResourceGenerator
                     case 'n': dontDeleteSet = true; break;
                     case 's': connString = getopt.Optarg; break;
                     case 'a': insertAll = true; break;
+                    case 'd': skipValidation = true; break;
                     default: PrintUsage(); return;
                 }
             }
@@ -56,7 +58,7 @@ namespace Gettext.DatabaseResourceGenerator
 
             try
             {
-                using (var db = new DatabaseInterface(connString, insertSP, deleteSP))
+                using (var db = new DatabaseInterface(connString, insertSP, deleteSP) { CheckDatabaseExists = !skipValidation })
                 {
                     db.Init();
                     db.CheckSPs();
@@ -122,6 +124,7 @@ namespace Gettext.DatabaseResourceGenerator
             Console.WriteLine("Options:");
             Console.WriteLine(" -n Dont delete previous resource set.");
             Console.WriteLine(" -a Insert all values, regardless of being empty.");
+            Console.WriteLine(" -d Skip database exists validation.");
 
         }
     }
