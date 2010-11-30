@@ -143,7 +143,7 @@ namespace <#= this.NamespaceName #>
     string ResourceName = "Strings";
     string NamespaceName = "Gettext";
     string ConfigurationSection = "appSettings";
-    string StoredProcedureName = "GetResourceSet";
+    string StoredProcedureName = "GettextGetResourceSet";
     bool ResourceManagerExpires = false;
     string ResourceManagerTTL = "0";
 #>
