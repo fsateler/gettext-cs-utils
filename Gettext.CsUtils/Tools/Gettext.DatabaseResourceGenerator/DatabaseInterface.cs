@@ -9,20 +9,25 @@ namespace Gettext.DatabaseResourceGenerator
     class DatabaseInterface : IDisposable
     {
         string connString;
-        string insertSP;
-        string deleteSP;
 
         SqlConnection conn;
         SqlTransaction trans;
 
-        public bool CheckDatabaseExists { get; set; }
+        public string KeyField { get; set; }
+        public string ValueField { get; set; }
+        public string CultureField { get; set; }
 
-        public DatabaseInterface(string connString, string insertSP, string deleteSP)
+        public string KeyParam { get { return "@" + KeyField; } }
+        public string ValueParam { get { return "@" + ValueField; } }
+        public string CultureParam { get { return "@" + CultureField; } }
+        
+        public string TableName { get; set; }
+        public string InsertSP { get; set; }
+        public string DeleteSP { get; set; }
+
+        public DatabaseInterface(string connString)
         {
             this.connString = connString;
-            this.insertSP = insertSP;
-            this.deleteSP = deleteSP;
-
             this.conn = new SqlConnection(connString);
         }
 
@@ -42,10 +47,10 @@ namespace Gettext.DatabaseResourceGenerator
         {
             try
             {
-                var command = new SqlCommand() { CommandText = insertSP, CommandType = System.Data.CommandType.StoredProcedure, Connection = conn, Transaction = trans };
-                command.Parameters.AddWithValue("@culture", culture);
-                command.Parameters.AddWithValue("@key", key);
-                command.Parameters.AddWithValue("@value", value);
+                var command = new SqlCommand() { CommandText = InsertSP, CommandType = System.Data.CommandType.StoredProcedure, Connection = conn, Transaction = trans };
+                command.Parameters.AddWithValue(CultureParam, culture);
+                command.Parameters.AddWithValue(KeyParam, key);
+                command.Parameters.AddWithValue(ValueParam, value);
                 command.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -59,8 +64,8 @@ namespace Gettext.DatabaseResourceGenerator
         {
             try
             {
-                var command = new SqlCommand() { CommandText = deleteSP, CommandType = System.Data.CommandType.StoredProcedure, Connection = conn, Transaction = trans };
-                command.Parameters.AddWithValue("@culture", culture);
+                var command = new SqlCommand() { CommandText = DeleteSP, CommandType = System.Data.CommandType.StoredProcedure, Connection = conn, Transaction = trans };
+                command.Parameters.AddWithValue(CultureParam, culture);
                 command.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -70,26 +75,118 @@ namespace Gettext.DatabaseResourceGenerator
             }
         }
 
-        public void CheckSPs()
+        public void Prepare()
         {
-            if (!ExistsSP(insertSP)) CreateInsertSP();
-            if (!ExistsSP(deleteSP)) CreateDeleteSP();
+            CheckI18NTable();
+            if (!ExistsSP(InsertSP)) CreateInsertSP();
+            if (!ExistsSP(DeleteSP)) CreateDeleteSP();
         }
 
         private void CreateDeleteSP()
         {
-            // TODO: Create delete SP
-            throw new NotImplementedException(String.Format("Delete stored procedure '{0}' unimplemented", deleteSP));
+            Console.WriteLine(string.Format("Delete string resources stored procedure named {0} does not exist. Creating for table {1}...", DeleteSP, TableName));
+            string cmd = String.Empty;
+
+            try
+            {
+                cmd = String.Format(@"
+                CREATE PROCEDURE [dbo].[{0}]	
+                    @{2} VARCHAR(5)
+                    AS
+                    BEGIN
+	                    DELETE FROM {1}	
+	                    WHERE {2} = @{2}
+                END", DeleteSP, TableName, CultureField);
+
+                var command = conn.CreateCommand();
+                command.CommandText = cmd;
+                command.Transaction = trans;
+                command.ExecuteScalar();
+
+
+                Console.WriteLine("Created {0} stored procedure with parameter @{1} on table {2}.", DeleteSP, CultureField, TableName);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Error creating delete stored procedure: {0}\n\nCommand: {1}", ex.Message, cmd);
+                throw;
+            }
         }
 
         private void CreateInsertSP()
         {
-            // TODO: Create insert SP
-            throw new NotImplementedException(String.Format("Insert stored procedure '{0}' unimplemented", insertSP));
+            Console.WriteLine(string.Format("Insert string resource stored procedure named {0} does not exist. Creating for table {1}...", InsertSP, TableName));
+
+            string cmd = String.Empty;
+            try
+            {
+                cmd = String.Format(@"
+                CREATE PROCEDURE [dbo].[{0}]	
+	                @{2} VARCHAR(5),
+	                @{3} VARCHAR(4000),
+	                @{4} VARCHAR(4000)
+                AS
+                BEGIN
+	                INSERT INTO [{1}] ([{2}], [{3}], [{4}])
+                    VALUES (@{2}, @{3}, @{4})
+                END", InsertSP, TableName, CultureField, KeyField, ValueField);
+
+                var command = conn.CreateCommand();
+                command.CommandText = cmd;
+                command.Transaction = trans;
+                command.ExecuteScalar();
+
+                Console.WriteLine("Created {0} stored procedure with parameters @{1}, @{2}, @{3} on table {4}.", InsertSP, CultureField, KeyField, ValueField, TableName);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Error creating insert stored procedure: {0}\n\nCommand: {1}", ex.Message, cmd);
+                throw;
+            }
         }
+
+        private void CheckI18NTable()
+        {
+            Console.WriteLine("Checking if the given table {0} exists...", TableName);
+
+            var command = conn.CreateCommand();
+            command.CommandText = "select case when exists((select * from information_schema.tables where table_name = '" + TableName + "')) then 1 else 0 end";
+            command.Transaction = trans;
+
+            bool existsTable = (int)command.ExecuteScalar() == 1;
+
+            if (!existsTable)
+            {
+                try
+                {
+                    Console.WriteLine(string.Format("Table {0} does not exist. Creating table with fields {1} {2} {3}...", TableName, CultureField, KeyField, ValueField));
+                    command.CommandText = string.Format("CREATE TABLE [dbo].[{0}] ([{1}] varchar(5) NOT NULL, [{2}] varchar(4000) NOT NULL, [{3}] varchar(4000))", TableName, CultureField, KeyField, ValueField);
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine("Error creating table: {0}\n\nCommand: {1}", ex.Message, command.CommandText);
+                    throw;
+                }
+
+                try
+                {
+                    command.CommandText = string.Format("ALTER TABLE [{0}] ADD CONSTRAINT [PK_{0}] PRIMARY KEY CLUSTERED ([{1}], [{2}])", TableName, CultureField, KeyField);
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine("Error creating table primary key: {0}\n\nCommand: {1}", ex.Message, command.CommandText);
+                    throw;
+                }
+            }
+        }
+
 
         private bool ExistsSP(string sp)
         {
+            Console.WriteLine("Checking if stored procedure {0} exists...", sp);
+
             try
             {
                 string cmd = String.Format("SELECT COUNT(*) FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[{0}]') AND type in (N'P', N'PC')", sp);

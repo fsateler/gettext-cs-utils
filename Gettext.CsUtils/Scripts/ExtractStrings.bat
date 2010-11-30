@@ -13,16 +13,16 @@ echo Creating files lists to be retrieved by gettext...
 dir %file_list% /S /B > %1.gettext.fileslist
 
 echo.
-echo Creating %1 po file from all %2 strings...
-%path_xgettext% -k -k%2.T -k%2.M --from-code=UTF-8 -LC# --omit-header -o%1.po -f%1.gettext.fileslist
+echo Creating %1 pot file from all %class_name% strings...
+%path_xgettext% -k -k%class_name%.T -k%class_name%.M --from-code=UTF-8 -LC# --omit-header -o%1.pot -f%1.gettext.fileslist
 
 echo.
-echo Copy %1.po file to %path_output% folder...
-copy %1.po %path_output%\%1.po
+echo Copy %1.pot file to %path_output% folder...
+copy %1.pot %path_output%\%1.pot
 
 echo.
 echo Removing all temporary files...
-del /Q *.po
+del /Q *.pot
 del /Q *.gettext.fileslist
 
 echo.

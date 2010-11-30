@@ -16,7 +16,7 @@ namespace Gettext.DatabaseResourceGenerator
         
         static void Main(string[] args)
         {
-            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "s:i:c:nad") { Opterr = false };
+            var getopt = new Getopt(Assembly.GetExecutingAssembly().GetName().Name, args, "s:i:c:nadp") { Opterr = false };
 
             string input = null;
             string culture = null;
@@ -24,10 +24,15 @@ namespace Gettext.DatabaseResourceGenerator
             bool dontDeleteSet = false;
             bool insertAll = false;
             bool skipValidation = false;
+            bool onlyPrepare = false;
 
             string connString = ConfigurationManager.ConnectionStrings["Gettext"].ConnectionString;
             string insertSP = ConfigurationManager.AppSettings["SP.Insert"];
             string deleteSP = ConfigurationManager.AppSettings["SP.Delete"];
+            string tableName = ConfigurationManager.AppSettings["Table.Name"];
+            string tableCulture = ConfigurationManager.AppSettings["Table.Fields.Culture"];
+            string tableKey = ConfigurationManager.AppSettings["Table.Fields.Key"];
+            string tableValue = ConfigurationManager.AppSettings["Table.Fields.Value"];
 
             int option;
             while (-1 != (option = getopt.getopt()))
@@ -40,34 +45,69 @@ namespace Gettext.DatabaseResourceGenerator
                     case 's': connString = getopt.Optarg; break;
                     case 'a': insertAll = true; break;
                     case 'd': skipValidation = true; break;
+                    case 'p': onlyPrepare = true; break;
                     default: PrintUsage(); return;
                 }
             }
 
-            if (input == null)
+            if (input == null && !onlyPrepare)
             {
                 PrintUsage();
                 return;
             }
 
-            if (connString == null || insertSP == null || deleteSP == null)
+            if (connString == null || insertSP == null || deleteSP == null || tableName == null || tableKey == null || tableCulture == null || tableValue == null)
             {
-                Console.Out.WriteLine("Ensure that connection string, insert and delete stored procedures are set in app config.");
+                Console.Out.WriteLine("Ensure that connection string, table name, table fields, insert and delete stored procedures are set in app config.");
+                Console.Out.WriteLine();
+                Console.Out.WriteLine("Expected connection strings are:");
+                Console.Out.WriteLine(" Gettext");
+                Console.Out.WriteLine();
+                Console.Out.WriteLine("Expected app settings are:");
+                Console.Out.WriteLine(" SP.Insert");
+                Console.Out.WriteLine(" SP.Delete");
+                Console.Out.WriteLine(" Table.Name");
+                Console.Out.WriteLine(" Table.Fields.Key");
+                Console.Out.WriteLine(" Table.Fields.Value");
+                Console.Out.WriteLine(" Table.Fields.Culture");
                 return;
             }
 
             try
             {
-                using (var db = new DatabaseInterface(connString, insertSP, deleteSP) { CheckDatabaseExists = !skipValidation })
+                using (var db = new DatabaseInterface(connString)
+                    {
+                        DeleteSP = deleteSP,
+                        InsertSP = insertSP,
+                        CultureField = tableCulture,
+                        KeyField = tableKey,
+                        ValueField = tableValue,
+                        TableName = tableName
+                    })
                 {
                     db.Init();
-                    db.CheckSPs();
 
+                    // Check if table and sps exist
+                    if (!skipValidation || onlyPrepare)
+                    {
+                        db.Prepare();
+                    }
+
+                    // If only prepare is set, do not use po file, just make sure everything is ready to use it later
+                    if (onlyPrepare)
+                    {
+                        Console.Out.WriteLine("Table and stored procedures ready.");
+                        db.Commit();
+                        return;
+                    }
+
+                    // Delete previous resource set for the specified culture
                     if (!dontDeleteSet)
                     {
                         db.DeleteResourceSet(culture);
                     }
 
+                    // Dump the file into the database
                     var requestor = new DatabaseParserRequestor(culture, db, insertAll);
                     new PoParser().Parse(new StreamReader(input), requestor);
 
@@ -81,33 +121,7 @@ namespace Gettext.DatabaseResourceGenerator
 
         }
 
-        [Obsolete]
-        private static void CreateI18NTable(string tableName, SqlConnection connection)
-        {
-            Console.WriteLine("Checking if the given table exists...");
-
-            var command = connection.CreateCommand();
-            command.CommandText = "select case when exists((select * from information_schema.tables where table_name = '" + tableName + "')) then 1 else 0 end";
-
-            bool existsTable = (int)command.ExecuteScalar() == 1;
-
-            if (!existsTable)
-            {
-                var trans = connection.BeginTransaction();
-
-                command.Transaction = trans;
-
-                Console.WriteLine(string.Format("Table {0} does not exist. Creating table...", tableName));
-                command.CommandText = string.Format("CREATE TABLE {0} (Culture varchar(20) NOT NULL, MessageKey varchar(500) NOT NULL, MessageValue varchar(500))", tableName);
-                command.ExecuteNonQuery();
-
-                command.CommandText = string.Format("ALTER TABLE {0} ADD CONSTRAINT PK_{0} PRIMARY KEY CLUSTERED (Culture, MessageKey)", tableName);
-                command.ExecuteNonQuery();
-
-                trans.Commit();
-            }
-        }
-
+        
         private static void PrintUsage()
         {
             Console.WriteLine();
@@ -117,14 +131,14 @@ namespace Gettext.DatabaseResourceGenerator
             Console.WriteLine("Parses a .po file and adds its entries to a database's table.");
             Console.WriteLine("Then you can use a DatabaseResourceManager to use those resources at runtime.");
             Console.WriteLine("Usage: {0} -iINPUTFILE -cCULTURE -sCONNSTRING", Assembly.GetExecutingAssembly().GetName().Name);
-            Console.WriteLine(" INPUTFILE Input file must be in po format.");
-            Console.WriteLine(" CULTURE Culture for the resource set to handle.");
-            Console.WriteLine(" CONNSTRING Connection string to override app config.");
-            Console.WriteLine(" CULTURE Culture for the resource set to handle.");
+            Console.WriteLine(" INPUTFILE Input file must be in po format (optional if -p).");
+            Console.WriteLine(" CULTURE Culture for the resource set to handle (optional if -p).");
+            Console.WriteLine(" CONNSTRING Connection string to override app config (optional).");
             Console.WriteLine("Options:");
+            Console.WriteLine(" -p Only setup table and stored procedures, do not parse po file.");
             Console.WriteLine(" -n Dont delete previous resource set.");
             Console.WriteLine(" -a Insert all values, regardless of being empty.");
-            Console.WriteLine(" -d Skip database exists validation.");
+            Console.WriteLine(" -d Skip table and stored procedures validation and creation.");
 
         }
     }
