@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gettext.Cs.Tests", "Core\Ge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gettext.Iconv", "Tools\Gettext.Iconv\Gettext.Iconv.csproj", "{7578444A-E104-4D72-94B5-DDCB1DA0D63F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gettext.Samples.Mvc", "Samples\Gettext.Samples.Mvc\Gettext.Samples.Mvc.csproj", "{208D43F3-84E6-45B9-B6CC-6E3F48E42A82}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Gettext.CsUtils.vsmdi
@@ -84,6 +86,10 @@ Global
 		{7578444A-E104-4D72-94B5-DDCB1DA0D63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7578444A-E104-4D72-94B5-DDCB1DA0D63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7578444A-E104-4D72-94B5-DDCB1DA0D63F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{208D43F3-84E6-45B9-B6CC-6E3F48E42A82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{208D43F3-84E6-45B9-B6CC-6E3F48E42A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{208D43F3-84E6-45B9-B6CC-6E3F48E42A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{208D43F3-84E6-45B9-B6CC-6E3F48E42A82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,5 +106,6 @@ Global
 		{38474466-DA21-4D19-A4D8-E2E7918480D6} = {380A3584-88CB-4153-9BC1-C18CFAE9EF26}
 		{C4B4300B-5B96-4F43-BD7D-517A29693B30} = {380A3584-88CB-4153-9BC1-C18CFAE9EF26}
 		{470FDBA5-04E5-4A9F-80EA-987D1F8D9074} = {DF21B331-8022-4958-AEF7-D7897814038A}
+		{208D43F3-84E6-45B9-B6CC-6E3F48E42A82} = {DF21B331-8022-4958-AEF7-D7897814038A}
 	EndGlobalSection
 EndGlobal

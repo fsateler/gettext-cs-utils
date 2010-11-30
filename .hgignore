@@ -4,3 +4,4 @@ obj
 *.suo
 *.orig
 *.user
+gettext-cs-utils

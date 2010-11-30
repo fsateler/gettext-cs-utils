@@ -29,6 +29,7 @@ namespace Gettext.DatabaseResourceGenerator
             string connString = ConfigurationManager.ConnectionStrings["Gettext"].ConnectionString;
             string insertSP = ConfigurationManager.AppSettings["SP.Insert"];
             string deleteSP = ConfigurationManager.AppSettings["SP.Delete"];
+            string getSP = ConfigurationManager.AppSettings["SP.Get"];
             string tableName = ConfigurationManager.AppSettings["Table.Name"];
             string tableCulture = ConfigurationManager.AppSettings["Table.Fields.Culture"];
             string tableKey = ConfigurationManager.AppSettings["Table.Fields.Key"];
@@ -56,7 +57,7 @@ namespace Gettext.DatabaseResourceGenerator
                 return;
             }
 
-            if (connString == null || insertSP == null || deleteSP == null || tableName == null || tableKey == null || tableCulture == null || tableValue == null)
+            if (connString == null || getSP == null || insertSP == null || deleteSP == null || tableName == null || tableKey == null || tableCulture == null || tableValue == null)
             {
                 Console.Out.WriteLine("Ensure that connection string, table name, table fields, insert and delete stored procedures are set in app config.");
                 Console.Out.WriteLine();
@@ -64,6 +65,7 @@ namespace Gettext.DatabaseResourceGenerator
                 Console.Out.WriteLine(" Gettext");
                 Console.Out.WriteLine();
                 Console.Out.WriteLine("Expected app settings are:");
+                Console.Out.WriteLine(" SP.Get");
                 Console.Out.WriteLine(" SP.Insert");
                 Console.Out.WriteLine(" SP.Delete");
                 Console.Out.WriteLine(" Table.Name");
@@ -77,6 +79,7 @@ namespace Gettext.DatabaseResourceGenerator
             {
                 using (var db = new DatabaseInterface(connString)
                     {
+                        GetSP = getSP,
                         DeleteSP = deleteSP,
                         InsertSP = insertSP,
                         CultureField = tableCulture,

@@ -24,6 +24,7 @@ namespace Gettext.DatabaseResourceGenerator
         public string TableName { get; set; }
         public string InsertSP { get; set; }
         public string DeleteSP { get; set; }
+        public string GetSP { get; set; }
 
         public DatabaseInterface(string connString)
         {
@@ -78,6 +79,7 @@ namespace Gettext.DatabaseResourceGenerator
         public void Prepare()
         {
             CheckI18NTable();
+            if (!ExistsSP(GetSP)) CreateGetSP();
             if (!ExistsSP(InsertSP)) CreateInsertSP();
             if (!ExistsSP(DeleteSP)) CreateDeleteSP();
         }
@@ -109,6 +111,37 @@ namespace Gettext.DatabaseResourceGenerator
             catch (Exception ex)
             {
                 Console.Error.WriteLine("Error creating delete stored procedure: {0}\n\nCommand: {1}", ex.Message, cmd);
+                throw;
+            }
+        }
+
+        private void CreateGetSP()
+        {
+            Console.WriteLine(string.Format("Get resource set stored procedure named {0} does not exist. Creating for table {1}...", GetSP, TableName));
+            string cmd = String.Empty;
+
+            try
+            {
+                cmd = String.Format(@"
+                CREATE PROCEDURE [dbo].[{0}]	
+                    @{2} VARCHAR(5)
+                    AS
+                    BEGIN
+	                    SELECT [{3}], [{4}] FROM [{1}]	
+	                    WHERE [{2}] = @{2}
+                END", GetSP, TableName, CultureField, KeyField, ValueField);
+
+                var command = conn.CreateCommand();
+                command.CommandText = cmd;
+                command.Transaction = trans;
+                command.ExecuteScalar();
+
+
+                Console.WriteLine("Created {0} stored procedure with parameter @{1} on table {2}.", GetSP, CultureField, TableName);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Error creating get stored procedure: {0}\n\nCommand: {1}", ex.Message, cmd);
                 throw;
             }
         }
