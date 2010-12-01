@@ -33,6 +33,7 @@ namespace Gettext
 			if (section == null) return defaultValue;
 			else return section[setting] ?? defaultValue;
         }
+
         
         /// <summary>
         /// Resources directory used to retrieve files from.
@@ -52,7 +53,6 @@ namespace Gettext
             set { fileFormat = value; }
         }
 
-		private static DateTime resourceManagerLoadedAt = DateTime.Now;
 
         /// <summary>
         /// Returns the cached ResourceManager instance used by this class.
@@ -68,9 +68,9 @@ namespace Gettext
 					{
 					    if (object.ReferenceEquals(resourceMan, null))
 		                {
-							var dir = resourcesDir;
-							var mgr = new global::Gettext.Cs.GettextResourceManager(ResourceName, dir, fileFormat);
-							resourceMan = mgr;
+							var directory = resourcesDir;
+								var mgr = new global::Gettext.Cs.GettextResourceManager(ResourceName, directory, fileFormat);
+								resourceMan = mgr;
 						}
 					}
                 }

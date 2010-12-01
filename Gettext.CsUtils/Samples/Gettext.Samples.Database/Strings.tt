@@ -5,5 +5,6 @@
 	this.ResourceName = "Strings";
     this.NamespaceName = "Gettext.Samples.Database";
     this.StoredProcedureName = "GettextGetResourceSet";
+    this.UseDatabase = true;
 #>
-<#@ include file="..\..\Core\Gettext.Cs\Templates\DatabaseStrings.tt" #>
+<#@ include file="..\..\Core\Gettext.Cs\Templates\Strings.tt" #>

@@ -25,6 +25,7 @@ namespace Gettext.Samples.Database
 
         public const string ResourceName = "Strings";
 
+        
         private static string GetSetting(string setting, string defaultValue)
         {
 			var section = (System.Collections.Specialized.NameValueCollection)System.Configuration.ConfigurationManager.GetSection("appSettings");
@@ -32,7 +33,7 @@ namespace Gettext.Samples.Database
 			else return section[setting] ?? defaultValue;
         }
 
-		private static DateTime resourceManagerLoadedAt = DateTime.Now;
+
 
         /// <summary>
         /// Returns the cached ResourceManager instance used by this class.
