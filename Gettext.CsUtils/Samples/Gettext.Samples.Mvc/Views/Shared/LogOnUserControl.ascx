@@ -12,3 +12,5 @@
 <%
     }
 %>
+&nbsp;-&nbsp;
+<%= System.Threading.Thread.CurrentThread.CurrentUICulture.Name %>

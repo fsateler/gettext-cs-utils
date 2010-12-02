@@ -12,21 +12,21 @@ if "%class_name%" == "" SET class_name=%1
 
 echo.
 echo Extracting all strings from asp %asp_files_root% files in t:t tags into .postrings files...
-%path_aspextract% -tt:t -k%2.T -epostrings -p%asp_files_root%
+%path_aspextract% -tt:t -k%class_name%.T -f%class_name%.T -epostrings -p%asp_files_root%
 
 echo.
 echo Creating files lists to be retrieved by gettext...
+SET file_list=%file_list%  ..\*.postrings
 dir %file_list% /S /B > %1.gettext.fileslist
 
 echo.
-echo Creating %1 po file from all %2 strings...
-%path_xgettext% -k -k%2.T -k%2.M --from-code=UTF-8 -LC# --omit-header -o%path_output%\%1.po -f%1.gettext.fileslist
+echo Creating %1 po file from all %class_name% strings...
+%path_xgettext% -k -k%class_name%.T -k%class_name%.M --from-code=UTF-8 -LC# --omit-header -o%path_output%\%1.pot -f%1.gettext.fileslist
 
 echo.
 echo Removing all temporary files...
-del /Q *.po
-del /Q %asp_files_root%\*.postrings
-del /Q *.gettext.fileslist
+del /Q /S %asp_files_root%\*.postrings
+del /Q /S *.gettext.fileslist
 
 echo.
 echo Finished

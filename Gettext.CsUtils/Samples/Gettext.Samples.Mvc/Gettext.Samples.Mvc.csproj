@@ -61,6 +61,14 @@
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Gettext\AspTranslateControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gettext\Strings.cs">
+      <DependentUpon>Strings.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -89,6 +97,31 @@
     <Content Include="Views\Shared\LogOnUserControl.ascx" />
     <Content Include="Views\Shared\Site.Master" />
     <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Gettext.Cs.Web\Gettext.Cs.Web.csproj">
+      <Project>{38474466-DA21-4D19-A4D8-E2E7918480D6}</Project>
+      <Name>Gettext.Cs.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Gettext.Cs\Gettext.Cs.csproj">
+      <Project>{D8869765-AB47-4C03-B2C5-E5498A55CA79}</Project>
+      <Name>Gettext.Cs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Gettext\Po\en\Strings.po">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Gettext\Po\es\Strings.po">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Gettext\Strings.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Strings.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

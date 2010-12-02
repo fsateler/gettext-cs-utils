@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gettext.Samples.Mvc", "Samp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gettext.Samples.Database", "Samples\Gettext.Samples.Database\Gettext.Samples.Database.csproj", "{9FBD5BA7-BCE6-48FE-9FB7-396F377D1313}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gettext.Samples.Spanish", "Samples\Gettext.Samples.Spanish\Gettext.Samples.Spanish.csproj", "{7404A86D-53FA-4B1B-B6FC-D84EB6F5E2D5}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Gettext.CsUtils.vsmdi
@@ -96,6 +98,10 @@ Global
 		{9FBD5BA7-BCE6-48FE-9FB7-396F377D1313}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FBD5BA7-BCE6-48FE-9FB7-396F377D1313}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FBD5BA7-BCE6-48FE-9FB7-396F377D1313}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7404A86D-53FA-4B1B-B6FC-D84EB6F5E2D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7404A86D-53FA-4B1B-B6FC-D84EB6F5E2D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7404A86D-53FA-4B1B-B6FC-D84EB6F5E2D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7404A86D-53FA-4B1B-B6FC-D84EB6F5E2D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,5 +120,6 @@ Global
 		{470FDBA5-04E5-4A9F-80EA-987D1F8D9074} = {DF21B331-8022-4958-AEF7-D7897814038A}
 		{208D43F3-84E6-45B9-B6CC-6E3F48E42A82} = {DF21B331-8022-4958-AEF7-D7897814038A}
 		{9FBD5BA7-BCE6-48FE-9FB7-396F377D1313} = {DF21B331-8022-4958-AEF7-D7897814038A}
+		{7404A86D-53FA-4B1B-B6FC-D84EB6F5E2D5} = {DF21B331-8022-4958-AEF7-D7897814038A}
 	EndGlobalSection
 EndGlobal

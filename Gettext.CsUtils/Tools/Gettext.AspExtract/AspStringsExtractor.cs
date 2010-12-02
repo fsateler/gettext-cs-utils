@@ -91,7 +91,7 @@ namespace Instedd.Gettext.AspExtract
             
             using (var requestor = new ParserRequestor(output, keyword, charset))
             {
-                using (var reader = new StreamReader(file, Encoding.GetEncoding(fromCharset)))
+                using (var reader = new StreamReader(file, fromCharset == null ? Encoding.Default : Encoding.GetEncoding(fromCharset)))
                 {
                     parser.Parse(reader.ReadToEnd(), requestor);
                 }

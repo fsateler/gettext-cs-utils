@@ -1,7 +1,10 @@
 @echo off
 
 if "%1" == "" goto NONAME
+if not "%3" == "" SET file_list=%3
+
 if "%file_list%" == "" goto NOFILELIST
+
 if "%path_xgettext%" == "" goto NOXGETTEXT
 if "%path_output%" == "" goto NOOUTPUT
 

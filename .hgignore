@@ -1,7 +1,9 @@
 syntax: glob
 bin
 obj
+App_Data
 *.suo
 *.orig
 *.user
+*.publish.xml
 gettext-cs-utils
