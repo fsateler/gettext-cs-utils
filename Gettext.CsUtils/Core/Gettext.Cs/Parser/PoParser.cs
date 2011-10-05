@@ -57,8 +57,8 @@ namespace Gettext.Cs
                         currentKey != null &&
                         currentValue != null)
                     {
-                        requestor.Handle(currentKey.ToString().Replace("\\n", "\n"),
-                            currentValue.ToString().Replace("\\n", "\n"));
+                        requestor.Handle(currentKey.ToString().Replace("\\n", "\n").Replace("\\\"", "\""),
+                            currentValue.ToString().Replace("\\n", "\n").Replace("\\\"", "\""));
                         currentKey = null;
                         currentValue = null;
                     }
@@ -86,10 +86,13 @@ namespace Gettext.Cs
                         continue;
 
                     int secondQuote = line.IndexOf('"', firstQuote + 1);
+                    while (secondQuote != -1 && line[secondQuote - 1] == '\\')
+                        secondQuote = line.IndexOf('"', secondQuote + 1);
                     if (secondQuote == -1)
                         continue;
 
-                    var piece = line.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
+                    string piece = line.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
+
                     if (isMsgId)
                     {
                         currentKey = new StringBuilder();
