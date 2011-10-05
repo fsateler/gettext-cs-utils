@@ -31,15 +31,10 @@ class HeadersCheck
        4.times do
          match ||= (/Copyright 2011 Manas/ =~
 f.readline) rescue nil
-           #puts("File #{filename} too short to check.")
        end
        f.close
        unless match
-         if dry_run
-           puts "Missing header in #{filename}"
-         else
-           add_header(filename)
-         end
+	     add_header(filename, dry_run)
          count += 1
        end
      end
@@ -52,19 +47,23 @@ header."
    end
  end
 
- def add_header(filename)
-   # Extracting file extension
+ def add_header(filename, dry_run = false)
    ext = /\.([^\.]*)$/.match(filename[1..-1])[1]
+   filename = filename.gsub('/', "\\")
    header = HEADERS[ext]
-   content = File.new(filename, 'r').read
-   if content[0..4] == '<?xml'
-     # If the file has a xml header, the license needs to be appended after
-     content = content[0..content.index("\n")] + header + content[(
-content.index("\n") + 1)..-1]
-   else
-     content = header + content
+   unless dry_run
+	   File.rename(filename, "#{filename}.contents")
+	   f = File.new(filename, 'w')
+	   f.write(header)
+	   f.close()
    end
-   File.new(filename, 'w').write(content)
+   
+   cmd = "type \"#{filename}.contents\" >> \"#{filename}\""
+   puts cmd
+   system(cmd) unless dry_run
+   cmd = "del \"#{filename}.contents\""
+   puts cmd
+   system(cmd)  unless dry_run
  end
 
 end
@@ -90,6 +89,8 @@ CS_HEADER = <<CSHEADER
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  * 
  **/
+ 
+ 
 CSHEADER
 
 BAT_HEADER = <<BATHEADER
@@ -110,6 +111,7 @@ rem Lesser General Public License for more details.
 rem 
 rem You should have received a copy of the GNU Lesser General Public 
 rem License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 
 BATHEADER
 
