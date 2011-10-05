@@ -7,3 +7,4 @@ App_Data
 *.user
 *.publish.xml
 gettext-cs-utils
+**.contents
