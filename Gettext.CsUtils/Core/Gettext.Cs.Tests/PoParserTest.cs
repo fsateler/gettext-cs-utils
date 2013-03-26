@@ -60,5 +60,31 @@ namespace Gettext.Cs.Tests
             Assert.AreEqual(parsedMsgid, actual.Keys.ToArray()[0], "Key does not match");
             Assert.AreEqual(parsedMsgstr, actual.Values.ToArray()[0], "Value does not match");
         }
+
+        [TestMethod]
+        public void FuzzyStringsAreIgnored() {
+
+            string poFile = @"
+# Random comment
+msgid ""Hello""
+msgstr ""Hola""
+
+# This string is fuzzy
+#, fuzzy
+msgid ""Goodbye""
+msgstr ""Adiós""
+
+# , This is tricky, because we have a space before a comma, and thus is not fuzzy
+msgid ""great""
+msgstr ""grandioso""
+";
+            TextReader reader = new StringReader(poFile);
+            PoParser target = new PoParser();
+
+            var actual = target.ParseIntoDictionary(reader);
+
+            Assert.IsFalse(actual.ContainsKey("Goodbye"), "Fuzzy string was included in results");
+            Assert.IsTrue(actual.ContainsKey("great"), "Parser did not parse block with comment including word fuzzy");
+        }
     }
 }

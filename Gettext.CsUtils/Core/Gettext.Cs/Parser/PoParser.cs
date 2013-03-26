@@ -43,6 +43,7 @@ namespace Gettext.Cs
             const int StateConsumingValue = 3;
 
             int state = StateWaitingKey;
+            bool isFuzzy = false;
 
             StringBuilder currentKey = null;
             StringBuilder currentValue = null;
@@ -55,7 +56,8 @@ namespace Gettext.Cs
                 {
                     if (state == StateConsumingValue &&
                         currentKey != null &&
-                        currentValue != null)
+                        currentValue != null &&
+                        !isFuzzy)
                     {
                         requestor.Handle(currentKey.ToString().Replace("\\n", "\n").Replace("\\\"", "\""),
                             currentValue.ToString().Replace("\\n", "\n").Replace("\\\"", "\""));
@@ -67,10 +69,14 @@ namespace Gettext.Cs
                         break;
 
                     state = StateWaitingKey;
+                    isFuzzy = false;
                     continue;
                 }
                 else if (line[0] == '#')
                 {
+                    if (line[1] == ',' && line.Contains("fuzzy")) {
+                        isFuzzy = true;
+                    }
                     continue;
                 }
 
